@@ -1,0 +1,49 @@
+# ASG
+resource "aws_launch_template" "main" {
+  name_prefix   = "asg-rollout-lt-"
+  image_id      = data.aws_ami.ubuntu_22_04.id
+  instance_type = "t2.micro"
+  iam_instance_profile {
+    name = var.ec2_instance_profile_name
+  }
+  user_data = base64encode(<<-EOF
+              #!/bin/bash
+              apt update -y
+              apt install -y docker.io ruby wget
+              systemctl start docker
+              systemctl enable docker
+              usermod -a -G docker ubuntu
+              cd /home/ubuntu
+              wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
+              chmod +x ./install
+              ./install auto
+              EOF
+  )
+}
+
+data "aws_ami" "ubuntu_22_04" {
+  most_recent = true
+  owners      = ["099720109477"]  # Canonical
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
+resource "aws_autoscaling_group" "blue" {
+  name_prefix         = "asg-rollout-blue-"
+  min_size            = 1
+  max_size            = 2
+  desired_capacity    = 1
+  vpc_zone_identifier = var.public_subnet_ids
+  launch_template {
+    id      = aws_launch_template.main.id
+    version = "$Latest"
+  }
+  target_group_arns = [var.blue_target_group_arn]
+  tag {
+    key                 = "Name"
+    value               = "asg-rollout-blue"
+    propagate_at_launch = true
+  }
+}

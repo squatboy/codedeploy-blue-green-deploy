@@ -1,0 +1,12 @@
+{
+    "name": "asg-rollout-app",
+    "version": "1.0.0",
+    "description": "A simple Node.js app for blue/green deployment testing.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1"
+    }
+}
