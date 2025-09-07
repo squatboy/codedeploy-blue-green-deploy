@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/app
+    destination: /home/ubuntu/app
 hooks:
   BeforeInstall:
     - location: scripts/install.sh
@@ -12,5 +12,3 @@ hooks:
     - location: scripts/start.sh
       timeout: 300
       runas: root
-environment_variables:
-  - ECR_REPO_URL: "<ECR_REPO_URL>"

@@ -37,6 +37,11 @@ resource "aws_iam_role_policy_attachment" "github_actions_codedeploy" {
   policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "github_actions_ecr" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+}
+
 # IAM Role for EC2
 resource "aws_iam_role" "ec2" {
   name = "ec2-role"
@@ -62,6 +67,11 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 resource "aws_iam_role_policy_attachment" "ec2_s3" {
   role       = aws_iam_role.ec2.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_ecr" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 # IAM Role for CodeDeploy

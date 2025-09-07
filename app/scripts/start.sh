@@ -1,4 +1,7 @@
 #!/bin/bash
+# Load environment variables
+source /home/ec2-user/app/.env
+
 cd /home/ec2-user/app
 
 # Pull the latest image

@@ -1,4 +1,7 @@
 #!/bin/bash
+# Load environment variables
+source /home/ec2-user/app/.env
+
 # Install Docker if not already installed
 yum update -y
 amazon-linux-extras install docker -y

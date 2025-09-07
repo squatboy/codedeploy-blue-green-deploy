@@ -1,8 +1,29 @@
 # ASG
+resource "aws_security_group" "ec2" {
+  name        = "asg-rollout-ec2-sg"
+  description = "Allow traffic from ALB to EC2"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [var.alb_security_group_id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_launch_template" "main" {
   name_prefix   = "asg-rollout-lt-"
   image_id      = data.aws_ami.ubuntu_22_04.id
   instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile {
     name = var.ec2_instance_profile_name
   }

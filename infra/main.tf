@@ -28,6 +28,8 @@ module "asg" {
   ec2_instance_profile_name = module.iam.ec2_instance_profile_name
   public_subnet_ids         = module.vpc.public_subnet_ids
   blue_target_group_arn     = module.alb.blue_target_group_arn
+  alb_security_group_id     = module.alb.alb_security_group_id
+  vpc_id                    = module.vpc.vpc_id
 }
 
 module "codedeploy" {

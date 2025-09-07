@@ -21,7 +21,28 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: ap-northeast-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: blue-green-app
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container & push it to ECR 
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Create .env file
+      run: |
+        echo "export ECR_REPO_URL=${{ steps.login-ecr.outputs.registry }}/blue-green-app" > app/.env
 
     - name: Zip application
       run: |
@@ -33,6 +54,8 @@ jobs:
         aws s3 cp ../app.zip s3://${{ secrets.S3_BUCKET_NAME }}/app.zip
 
     - name: Create CodeDeploy Deployment
+      env:
+        ECR_REPO_URL: ${{ steps.login-ecr.outputs.registry }}/blue-green-app
       run: |
         aws deploy create-deployment \
           --application-name asg-rollout-app \

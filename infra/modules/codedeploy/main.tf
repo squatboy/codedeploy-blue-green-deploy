@@ -25,16 +25,8 @@ resource "aws_codedeploy_deployment_group" "main" {
   }
 
   load_balancer_info {
-    target_group_pair_info {
-      prod_traffic_route {
-        listener_arns = [var.listener_arn]
-      }
-      target_group {
-        name = var.blue_target_group_name
-      }
-      target_group {
-        name = var.green_target_group_name
-      }
+    target_group_info {
+      name = var.blue_target_group_name
     }
   }
 
