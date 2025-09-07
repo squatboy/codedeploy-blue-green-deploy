@@ -30,6 +30,7 @@ module "asg" {
   blue_target_group_arn     = module.alb.blue_target_group_arn
   alb_security_group_id     = module.alb.alb_security_group_id
   vpc_id                    = module.vpc.vpc_id
+  ssh_key_name              = var.ssh_key_name
 }
 
 module "codedeploy" {

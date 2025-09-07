@@ -13,3 +13,9 @@ variable "s3_bucket_name" {
   description = "S3 bucket name for CodeDeploy artifacts"
   type        = string
 }
+
+variable "ssh_key_name" {
+  description = "SSH Key pair name for EC2 instances"
+  type        = string
+  default     = "test-key"
+}

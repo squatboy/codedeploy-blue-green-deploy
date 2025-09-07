@@ -1,7 +1,7 @@
 # ASG
 resource "aws_security_group" "ec2" {
   name        = "asg-rollout-ec2-sg"
-  description = "Allow traffic from ALB to EC2"
+  description = "Allow traffic from ALB to EC2 and SSH"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -9,6 +9,13 @@ resource "aws_security_group" "ec2" {
     to_port         = 3000
     protocol        = "tcp"
     security_groups = [var.alb_security_group_id]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -20,9 +27,10 @@ resource "aws_security_group" "ec2" {
 }
 
 resource "aws_launch_template" "main" {
-  name_prefix   = "asg-rollout-lt-"
-  image_id      = data.aws_ami.ubuntu_22_04.id
-  instance_type = "t2.micro"
+  name_prefix            = "asg-rollout-lt-"
+  image_id               = data.aws_ami.ubuntu_22_04.id
+  instance_type          = "t2.micro"
+  key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile {
     name = var.ec2_instance_profile_name
@@ -56,7 +64,7 @@ resource "aws_launch_template" "main" {
 
 data "aws_ami" "ubuntu_22_04" {
   most_recent = true
-  owners      = ["099720109477"]  # Canonical
+  owners      = ["099720109477"] # Canonical
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
@@ -85,8 +93,8 @@ resource "aws_autoscaling_group_tag" "blue_name" {
   autoscaling_group_name = aws_autoscaling_group.blue.name
 
   tag {
-    key   = "Name"
-    value = "asg-rollout-blue"
+    key                 = "Name"
+    value               = "asg-rollout-blue"
     propagate_at_launch = false
   }
 }

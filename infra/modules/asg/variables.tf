@@ -22,3 +22,8 @@ variable "vpc_id" {
   description = "VPC ID"
   type        = string
 }
+
+variable "ssh_key_name" {
+  description = "Key pair name for EC2 instances ssh access"
+  type        = string
+}
