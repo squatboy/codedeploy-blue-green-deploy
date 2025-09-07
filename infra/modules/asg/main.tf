@@ -29,15 +29,27 @@ resource "aws_launch_template" "main" {
   }
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              apt update -y
-              apt install -y docker.io ruby wget
+              set -e -x
+              
+              # Update and install dependencies
+              apt-get update -y
+              apt-get install -y ruby-full wget
+              
+              # Install Docker
+              apt-get install -y docker.io
               systemctl start docker
               systemctl enable docker
               usermod -a -G docker ubuntu
+              
+              # Install AWS CodeDeploy agent
               cd /home/ubuntu
               wget https://aws-codedeploy-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/latest/install
               chmod +x ./install
               ./install auto
+              
+              # Start and enable the CodeDeploy agent service
+              systemctl start codedeploy-agent
+              systemctl enable codedeploy-agent
               EOF
   )
 }
@@ -52,7 +64,7 @@ data "aws_ami" "ubuntu_22_04" {
 }
 
 resource "aws_autoscaling_group" "blue" {
-  name_prefix         = "asg-rollout-blue-"
+  name                = "asg-rollout-blue"
   min_size            = 1
   max_size            = 2
   desired_capacity    = 1
@@ -66,5 +78,15 @@ resource "aws_autoscaling_group" "blue" {
     key                 = "Name"
     value               = "asg-rollout-blue"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_group_tag" "blue_name" {
+  autoscaling_group_name = aws_autoscaling_group.blue.name
+
+  tag {
+    key   = "Name"
+    value = "asg-rollout-blue"
+    propagate_at_launch = false
   }
 }

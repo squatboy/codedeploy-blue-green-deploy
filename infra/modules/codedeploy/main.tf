@@ -35,11 +35,5 @@ resource "aws_codedeploy_deployment_group" "main" {
     events  = ["DEPLOYMENT_FAILURE"]
   }
 
-  ec2_tag_set {
-    ec2_tag_filter {
-      key   = "Name"
-      type  = "KEY_AND_VALUE"
-      value = "asg-rollout-blue"
-    }
-  }
+  autoscaling_groups = [var.blue_asg_name]
 }
