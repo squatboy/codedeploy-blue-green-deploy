@@ -35,7 +35,5 @@ module "asg" {
 module "codedeploy" {
   source                      = "./modules/codedeploy"
   codedeploy_service_role_arn = module.iam.codedeploy_service_role_arn
-  listener_arn                = module.alb.listener_arn
   blue_target_group_name      = module.alb.blue_target_group_name
-  green_target_group_name     = module.alb.green_target_group_name
 }
