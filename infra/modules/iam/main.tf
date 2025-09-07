@@ -64,17 +64,17 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   role = aws_iam_role.ec2.name
 }
 
-resource "aws_iam_role_policy_attachment" "ec2_s3" {
+resource "aws_iam_role_policy_attachment" "ec2_s3_full" {
   role       = aws_iam_role.ec2.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-resource "aws_iam_role_policy_attachment" "ec2_ecr" {
+resource "aws_iam_role_policy_attachment" "ec2_ecr_full" {
   role       = aws_iam_role.ec2.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 }
 
-# IAM Role for CodeDeploy
+# IAM Role for CodeDeploy 
 resource "aws_iam_role" "codedeploy" {
   name = "codedeploy-role"
   assume_role_policy = jsonencode({
@@ -91,7 +91,27 @@ resource "aws_iam_role" "codedeploy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
+resource "aws_iam_role_policy" "codedeploy_custom_policy" {
+  name = "codedeploy-custom-policy"
+  role = aws_iam_role.codedeploy.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid      = "CustomCodeDeployPolicy",
+        Effect   = "Allow",
+        Action   = [
+          "iam:PassRole",
+          "ec2:CreateTags",
+          "ec2:RunInstances"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "codedeploy_managed_policy" {
   role       = aws_iam_role.codedeploy.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
 }
