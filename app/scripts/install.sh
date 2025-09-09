@@ -1,4 +1,5 @@
 #!/bin/bash
+source /home/ubuntu/app/.env
 set -e -x
 
 # ECR 로그인
