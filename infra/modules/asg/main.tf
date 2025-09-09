@@ -41,7 +41,7 @@ resource "aws_launch_template" "main" {
               
               # Update and install dependencies
               apt-get update -y
-              apt-get install -y ruby-full wget
+              apt-get install -y ruby-full wget awscli
               
               # Install Docker
               apt-get install -y docker.io
@@ -86,15 +86,5 @@ resource "aws_autoscaling_group" "blue" {
     key                 = "Name"
     value               = "asg-rollout-blue"
     propagate_at_launch = true
-  }
-}
-
-resource "aws_autoscaling_group_tag" "blue_name" {
-  autoscaling_group_name = aws_autoscaling_group.blue.name
-
-  tag {
-    key                 = "Name"
-    value               = "asg-rollout-blue"
-    propagate_at_launch = false
   }
 }
