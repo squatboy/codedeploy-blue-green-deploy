@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 
-const version = 'v1.0.0';
+const version = 'v2.0.0';
 
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
