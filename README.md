@@ -1,3 +1,5 @@
+### 🇰🇷 [한국어 보기](README.ko.md)
+
 # CI/CD Pipeline with Blue/Green Deployment on AWS
 
 This project implements Blue/Green deployment of Docker container-based applications using Terraform to manage infrastructure on AWS and GitHub Actions to build a CI/CD pipeline.
