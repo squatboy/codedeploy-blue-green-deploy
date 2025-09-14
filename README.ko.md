@@ -118,9 +118,12 @@ Terraform을 사용하여 Blue/Green 배포에 필요한 모든 AWS 인프라(VP
     - **Step 2: Rerouting traffic**: Green 환경의 인스턴스가 정상 상태가 되면, ALB 리스너가 트래픽을 Blue 환경에서 Green 환경으로 전환
     - **Step 3: Terminating old instances**: 트래픽 전환 후 설정된 대기 시간이 지나면, 이전 버전의 인스턴스("Blue" 환경) 종료
 
+        <img width="1472" height="584" alt="라우팅_전환2" src="https://github.com/user-attachments/assets/ec94a81a-df5d-4874-b46b-027139d4465c" />
+
 4.  **배포 결과 확인**
     - 배포의 "Step 2"가 진행되는 동안 웹 브라우저에서 `alb_dns_name` 주소를 새로고침하면서 "Hello, World! This is version 2.0" 메시지로 바뀌는 것을 확인
       > 이는 무중단으로 트래픽이 신규 버전으로 전환되었음을 의미함.
+      <img width="1369" height="584" alt="codedeploy-2단계" src="https://github.com/user-attachments/assets/08469129-d526-460b-9031-d08b617bccdc" />
 
 
 ### 5. 리소스 정리
